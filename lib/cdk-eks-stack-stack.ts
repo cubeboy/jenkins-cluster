@@ -5,6 +5,7 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import * as account from '../resources/account';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
+import { MockIntegration } from 'aws-cdk-lib/aws-apigateway';
 
 export class CdkEksStackStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -50,12 +51,17 @@ export class CdkEksStackStack extends Stack {
 
     });
 
+    const monitoring = devOpsEksCluster.addManifest('monitoring', {
+      apiVersion: 'v1',
+      kind: 'Namespace',
+      metadata: { name: 'monitoring' },
+    })
+
     devOpsEksCluster.addHelmChart('prometheus', {
       repository: 'https://prometheus-community.github.io/helm-charts',
       chart: 'kube-prometheus-stack',
       release: 'prometheus',
       namespace: 'monitoring',
-      createNamespace: true,
       values: {
         'grafana': {
           'service': {
@@ -63,9 +69,9 @@ export class CdkEksStackStack extends Stack {
           }
         }
       }
-    });
+    }).node.addDependency(monitoring);
 
-    devOpsEksCluster.addManifest('iam-loki-s3', {
+    const secret = devOpsEksCluster.addManifest('iam-loki-s3', {
       apiVersion: 'v1',
       kind: 'Secret',
       metadata: {
@@ -78,6 +84,7 @@ export class CdkEksStackStack extends Stack {
         AWS_SECRET_ACCESS_KEY: account.AWS_SECRET_ACCESS_KEY
       }
     });
+    secret.node.addDependency(monitoring);
 
     const lokiValues : any = yaml.load(fs.readFileSync('./resources/loki-values.yaml', 'utf8')) ;
     
@@ -86,9 +93,8 @@ export class CdkEksStackStack extends Stack {
       chart: 'loki-stack',
       release: 'loki',
       namespace: 'monitoring',
-      createNamespace: true,
       values: lokiValues,
-    });
+    }).node.addDependency(secret);
   }
 
   get availabilityZones(): string[] {
