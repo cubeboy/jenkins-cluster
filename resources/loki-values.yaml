@@ -1,0 +1,54 @@
+loki:
+  env:
+  - name: 'AWS_ACCESS_KEY_ID'
+    valueFrom:
+      secretKeyRef:
+        name: 'iam-loki-s3'
+        key: 'AWS_ACCESS_KEY_ID'
+  - name: 'AWS_SECRET_ACCESS_KEY'
+    valueFrom:
+      secretKeyRef:
+        name: 'iam-loki-s3'
+        key: 'AWS_SECRET_ACCESS_KEY'
+
+  config:
+    ingester:
+      chunk_idle_period: '45m'
+      chunk_block_size: 262144
+      chunk_retain_period: '15m'
+      max_transfer_retries: 0
+
+    chunk_store_config:
+      max_look_back_period: '168h'
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: '168h'
+
+    schema_config:
+      configs:
+        - from: '2021-05-12'
+          store: 'boltdb-shipper'
+          object_store: 's3'
+          schema: 'v11'
+          index:
+            prefix: 'loki_index_'
+            period: '24h'
+    storage_config:
+      aws:
+        s3: 's3://ap-northeast-2/cdk-monitoring-log'
+        s3forcepathstyle: true
+        bucketnames: 'cdk-monitoring-log'
+        region: 'ap-northeast-2'
+        insecure: false
+        sse_encryption: false
+      boltdb_shipper:
+        shared_store: 's3'
+        cache_ttl: '24h'
+
+  resources:
+    limits:
+      cpu: '200m'
+      memory: '256Mi'
+    requests:
+      cpu: '100m'
+      memory: '128Mi'
