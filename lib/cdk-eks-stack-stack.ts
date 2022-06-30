@@ -95,6 +95,26 @@ export class CdkEksStackStack extends Stack {
       namespace: 'monitoring',
       values: lokiValues,
     }).node.addDependency(secret);
+
+    const productService = devOpsEksCluster.addManifest('product-services', {
+      apiVersion: 'v1',
+      kind: 'Namespace',
+      metadata: { name: 'product-services' },
+    })
+
+    const mongoYaml : any = yaml.load(fs.readFileSync('./resources/mongo.yaml', 'utf8'));
+    const mongoDb = devOpsEksCluster.addManifest('mongo-db', mongoYaml);
+    mongoDb.node.addDependency(productService);
+
+    const mongoServiceYaml : any = yaml.load(fs.readFileSync('./resources/mongo-service.yaml', 'utf8'));
+    devOpsEksCluster.addManifest('mongo-service', mongoServiceYaml).node.addDependency(mongoDb);
+
+    const mysqlYaml : any = yaml.load(fs.readFileSync('./resources/mysql.yaml', 'utf8'));
+    const mysqlDb = devOpsEksCluster.addManifest('mysql-db', mysqlYaml);
+    mysqlDb.node.addDependency(productService);
+
+    const mysqlServiceYaml : any = yaml.load(fs.readFileSync('./resources/mysql-service.yaml', 'utf8'));
+    devOpsEksCluster.addManifest('mysql-service', mysqlServiceYaml).node.addDependency(mysqlDb);
   }
 
   get availabilityZones(): string[] {

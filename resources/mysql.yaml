@@ -1,0 +1,45 @@
+apiVersion: 'apps/v1'
+kind: 'Deployment'
+metadata:
+  name: 'mysql-deploy'
+  labels:
+    app: 'mysql-db'
+  namespace: 'product-services'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: 'mysql-db'
+  strategy:
+    type: 'RollingUpdate'
+    rollingUpdate:
+      maxSurge: '25%'
+      maxUnavailable: '25%'
+  template:
+    metadata:
+      labels:
+        app: 'mysql-db'
+    spec:
+      hostname: 'mysql-db'
+      containers:
+        - image: 'mysql:5.7'
+          name: 'mysql-db'
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 3306
+            protocol: 'TCP'
+          env:
+          - name: 'MYSQL_ROOT_PASSWORD'
+            value: 'rootpwd'
+          - name: 'MYSQL_DATABASE'
+            value: 'review-db'
+          - name: 'MYSQL_USER'
+            value: 'user'
+          - name: 'MYSQL_PASSWORD'
+            value: 'pwd'
