@@ -9,18 +9,16 @@ export class CdkDevopsVpcStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     
-    const vpc = new ec2.Vpc(this, 'devops-vpc', VpcAttributes);
+    this.devopsVpc = new ec2.Vpc(this, 'devops-vpc', VpcAttributes);
+    cdk.Tags.of(this.devopsVpc).add('cost', 'com-code');
+    this.devopsVpc.publicSubnets.forEach(subnet => cdk.Tags.of(subnet).add('cost', 'com-code'));
+    this.devopsVpc.publicSubnets.forEach(subnet => cdk.Tags.of(subnet).add('scope', 'public'));
 
-    cdk.Aspects.of(vpc).add(new cdk.Tag('cost', 'com-code'));
-    this.devopsVpc = vpc;
-
-    new cdk.CfnOutput(this, 'devops-vpc-id', {
-      value: vpc.vpcId,
-      exportName: 'devops-vpc-id'
-    });
-
+    this.devopsVpc.privateSubnets.forEach(subnet => cdk.Tags.of(subnet).add('cost', 'com-code'));
+    this.devopsVpc.privateSubnets.forEach(subnet => cdk.Tags.of(subnet).add('scope', 'public'));
     
     /* additioanalCidr 구성. 들어올땐 맘대로지만 나갈때는 아니므로 주의 할것.
+    PublicSubnet, PrivateSubnet 을 직접 구성 할때는 NatGatway 등의 구성요소를 수동으로 설정해야 정상 동작함
     const cidr = new ec2.CfnVPCCidrBlock(this, "additioanalCidr", {
       vpcId: vpc.vpcId,
       cidrBlock: '192.170.0.0/16'

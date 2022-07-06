@@ -21,11 +21,11 @@ export class CdkEksStackStack extends Stack {
         {
           cidrMask: 25,
           name: 'PublicSubnet',
-          subnetType: ec2.SubnetType.PUBLIC,
+          subnetType: ec2.SubnetType.PUBLIC
         }, {
           cidrMask: 25,
           name: 'PrivateSubnet',
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT
         },
       ]
     });
