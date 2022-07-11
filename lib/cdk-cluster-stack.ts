@@ -2,12 +2,12 @@ import * as cdk from 'aws-cdk-lib';
 import * as eks from 'aws-cdk-lib/aws-eks'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { Construct } from 'constructs';
-import { DevOpsStackProps } from '../modules/DevopsStackProps';
+import { ClusterStackProps } from '../modules/ClusterStackProps';
 
-export class CdkDevopsClusterStack extends cdk.Stack {
+export class CdkClusterStack extends cdk.Stack {
   public readonly eksCluster: eks.Cluster;
 
-  constructor(scope: Construct, id: string, props: DevOpsStackProps) {
+  constructor(scope: Construct, id: string, props: ClusterStackProps) {
     super(scope, id, props);
 
     const vpc = props.vpc;

@@ -3,11 +3,11 @@ import { Construct } from 'constructs';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
 import * as account from '../resources/account'
-import { DevOpsStackProps } from '../modules/DevopsStackProps';
+import { ClusterStackProps } from '../modules/ClusterStackProps';
 
-export class CdkDevopsMonitorStack extends cdk.Stack {
+export class CdkMonitorStack extends cdk.Stack {
   
-  constructor(scope: Construct, id: string, props: DevOpsStackProps) {
+  constructor(scope: Construct, id: string, props: ClusterStackProps) {
     super(scope, id, props);
 
     const cluster = props.cluster;

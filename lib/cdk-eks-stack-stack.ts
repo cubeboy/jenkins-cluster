@@ -5,7 +5,6 @@ import * as eks from 'aws-cdk-lib/aws-eks';
 import * as account from '../resources/account';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
-import { MockIntegration } from 'aws-cdk-lib/aws-apigateway';
 
 export class CdkEksStackStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

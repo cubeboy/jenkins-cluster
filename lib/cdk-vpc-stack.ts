@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { VpcAttributes } from '../resources/devops-attribute';
 
-export class CdkDevopsVpcStack extends cdk.Stack {
+export class CdkVpcStack extends cdk.Stack {
   public readonly devopsVpc: ec2.Vpc
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {

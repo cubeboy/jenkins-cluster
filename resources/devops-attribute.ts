@@ -18,3 +18,7 @@ export const VpcAttributes = {
   ],
   availabilityZones: ['ap-northeast-2a', 'ap-northeast-2c']
 } as ec2.VpcProps
+
+export const drivers = {
+  awsEfsDriver: true
+}
