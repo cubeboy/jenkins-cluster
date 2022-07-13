@@ -26,11 +26,17 @@ export class CdkMonitorStack extends cdk.Stack {
         namespace: 'monitoring',
         values: {
           'grafana': {
-            enabled: false
-          },
-          'prometheus': {
             'service': {
               'type': 'LoadBalancer'
+            },
+            'grafana.ini': {
+              'smtp': {
+                enabled: true,
+                host: "smtp.gmail.com:587",
+                user: "cubeboy.kim@gmail.com",
+                password: "rudgml73",
+                skip_verify: true,
+              }
             }
           }
         }

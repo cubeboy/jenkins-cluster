@@ -1,0 +1,7 @@
+persistence:
+  enabled: true
+  existingClaim: jenkins-pvc
+  storageClass: efs-sc
+  accessModes:
+    - ReadWriteMany
+  size: 2Gi

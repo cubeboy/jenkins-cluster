@@ -19,34 +19,43 @@ const vpcStack = new CdkVpcStack(app, 'CdkDevopsVpcStack', {
 });
 
 const clusterStack = new CdkClusterStack(app, 'CdkDevopsClusterStack', {
-  env: propsEnv, vpc: vpcStack.devopsVpc
+  env: propsEnv,
+  vpc: vpcStack.devopsVpc
 });
 clusterStack.node.addDependency(vpcStack);
 
+const monitorStack = new CdkMonitorStack(app, 'CdkDevopsMonitorStack', {
+  env: propsEnv,
+  vpc: vpcStack.devopsVpc,
+  cluster: clusterStack.eksCluster
+});
+monitorStack.node.addDependency(clusterStack);
+
 const clusterDriverStack = new CdkClusterDriverStack(app, 'CdkDevopsClusterDriverStack', {
-  env: propsEnv, vpc: vpcStack.devopsVpc, cluster: clusterStack.eksCluster
+  env: propsEnv,
+  vpc: vpcStack.devopsVpc,
+  cluster: clusterStack.eksCluster
 })
 clusterDriverStack.node.addDependency(clusterStack);
 
-
 const fsapStack = new  CdkClusterFsApStack(app, 'CdkDevopsClusterFsApStack', {
-  env: propsEnv, vpc: vpcStack.devopsVpc, stackNamespace: 'jenkins'
+  env: propsEnv,
+  vpc: vpcStack.devopsVpc,
+  stackNamespace: 'jenkins'
 });
 fsapStack.node.addDependency(vpcStack);
 
 const pvcStack = new CdkPvcStack(app, 'CdkDevopsPvcStack', {
-  env: propsEnv, 
-  vpc: vpcStack.devopsVpc, 
-  cluster: clusterStack.eksCluster, 
-  stackNamespace: 'jenkins', 
+  env: propsEnv,
+  vpc: vpcStack.devopsVpc,
+  cluster: clusterStack.eksCluster,
+  stackNamespace: 'jenkins',
   fsApHandle: fsapStack.fsApHandle
 });
 pvcStack.node.addDependency(fsapStack);
 
-/*
-const monitorStack = new CdkMonitorStack(app, 'CdkDevopsMonitorStack', {
-  env: propsEnv, vpc: vpcStack.devopsVpc, cluster: clusterStack.eksCluster
-});
-*/
-
-//monitorStack.node.addDependency(clusterStack);
+const cicdStack = new CdkCicdStack(app, "CdkDevopsCicdStack", {
+  env: propsEnv,
+  vpc: vpcStack.devopsVpc,
+  cluster: clusterStack.eksCluster
+})

@@ -11,9 +11,6 @@ loki:
         name: 'iam-loki-s3'
         key: 'AWS_SECRET_ACCESS_KEY'
 
-  service:
-    type: 'LoadBalancer'
-
   config:
     ingester:
       chunk_idle_period: '45m'

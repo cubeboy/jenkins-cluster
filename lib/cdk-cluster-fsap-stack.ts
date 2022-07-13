@@ -17,7 +17,6 @@ export class CdkClusterFsApStack extends cdk.Stack {
       const fsapSg = new ec2.SecurityGroup(this, stackNamespace + '-fsap-sg', {
         vpc,
         securityGroupName: stackNamespace + '-fsap-sg',
-        allowAllOutbound: true,
         description: stackNamespace + ' :: Amazon EFS for EKS, SG for mount target'
       });
       fsapSg.addIngressRule(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(2049), stackNamespace + '-cluster access');
