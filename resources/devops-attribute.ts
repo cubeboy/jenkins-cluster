@@ -22,3 +22,12 @@ export const VpcAttributes = {
 export const drivers = {
   awsEfsDriver: true
 }
+
+export const efsAttributes = {
+  jenkins: {
+    storage: '10Gi'
+  },
+  grafana: {
+    storage: '2Gi'
+  },
+}
