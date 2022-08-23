@@ -3,6 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import { Construct } from 'constructs';
 import { ClusterStackProps } from '../modules/ClusterStackProps';
+import { StackInfo } from '../resources/devops-attribute';
 
 export class CdkClusterFsApStack extends cdk.Stack {
   public readonly fsApHandle: string
@@ -11,9 +12,9 @@ export class CdkClusterFsApStack extends cdk.Stack {
     super(scope, id, props);
 
     const stackNamespace = props.stackNamespace;
-    const vpc = props.vpc;  
+    const vpc = props.vpc;
     try{
-      
+
       const fsapSg = new ec2.SecurityGroup(this, stackNamespace + '-fsap-sg', {
         vpc,
         securityGroupName: stackNamespace + '-fsap-sg',
@@ -23,7 +24,7 @@ export class CdkClusterFsApStack extends cdk.Stack {
       cdk.Tags.of(fsapSg).add('cfn.devops.stack', stackNamespace + '-fsap-stack');
       cdk.Tags.of(fsapSg).add('Name', stackNamespace + '-fsap-sg');
       cdk.Tags.of(fsapSg).add('env', 'dev');
-      cdk.Tags.of(fsapSg).add('cost', 'com-code');
+      cdk.Tags.of(fsapSg).add('cost', StackInfo.cost);
 
       const fs = new efs.FileSystem(this, stackNamespace + '-fs', {
         vpc: vpc,
@@ -38,7 +39,7 @@ export class CdkClusterFsApStack extends cdk.Stack {
       cdk.Tags.of(fs).add('efs.csi.aws.com/cluster', 'true');
       cdk.Tags.of(fs).add('Name', stackNamespace + '-fs');
       cdk.Tags.of(fs).add('env', 'dev');
-      cdk.Tags.of(fs).add('cost', 'com-code');
+      cdk.Tags.of(fs).add('cost', StackInfo.cost);
 
       const ap = new efs.AccessPoint(this, stackNamespace + '-ap', {
         fileSystem: fs,
@@ -52,7 +53,7 @@ export class CdkClusterFsApStack extends cdk.Stack {
       });
       ap.node.addDependency(fs);
       cdk.Tags.of(ap).add('Name', stackNamespace + '-ap');
-      cdk.Tags.of(ap).add('cost', 'com-code');
+      cdk.Tags.of(ap).add('cost', StackInfo.cost);
 
       this.fsApHandle = fs.fileSystemId + '::' + ap.accessPointId;
 

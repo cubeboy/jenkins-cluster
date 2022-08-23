@@ -3,6 +3,7 @@ import * as eks from 'aws-cdk-lib/aws-eks'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { Construct } from 'constructs';
 import { ClusterStackProps } from '../modules/ClusterStackProps';
+import { StackInfo, EksAttributes } from '../resources/devops-attribute';
 
 export class CdkClusterStack extends cdk.Stack {
   public readonly eksCluster: eks.Cluster;
@@ -12,31 +13,31 @@ export class CdkClusterStack extends cdk.Stack {
 
     const vpc = props.vpc;
 
-    this.eksCluster = new eks.Cluster(this, 'devops-cluster', {
-      clusterName: 'devops-cluster',
+    this.eksCluster = new eks.Cluster(this, StackInfo.name + '-cluster', {
+      clusterName: StackInfo.name + '-cluster',
       version: eks.KubernetesVersion.V1_21,
       vpc: vpc,
       defaultCapacity: 0,
       tags: {
-        ['cost']: 'com-code',
-        ['owner']: 'cluster-user'
+        ['cost']: StackInfo.cost,
+        ['owner']: StackInfo.name + '-user'
       }
     });
 
-    this.eksCluster.addNodegroupCapacity('devops-nodegroup', {
+    this.eksCluster.addNodegroupCapacity(StackInfo.name + '-nodegroup', {
       instanceTypes: [
-        ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE)
+        EksAttributes.instanceType
       ],
-      minSize: 1,
-      maxSize: 3,
-      desiredSize: 1,
+      minSize: EksAttributes.nodeMinSize,
+      maxSize: EksAttributes.nodeMaxSize,
+      desiredSize: EksAttributes.nodeDesiredSize,
       capacityType: eks.CapacityType.ON_DEMAND,
-      diskSize: 20,
-      amiType: eks.NodegroupAmiType.AL2_X86_64,
-      subnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE_WITH_NAT}),
+      diskSize: EksAttributes.nodeDiskSize,
+      amiType: EksAttributes.nodeAmiType,
+      subnets: vpc.selectSubnets({ subnetType: EksAttributes.nodeSubnetType}),
       tags: {
-        ['cost']: 'com-code',
-        ['owner']: 'nodegroup-user'
+        ['cost']: StackInfo.cost,
+        ['owner']: StackInfo.cost + '-nodegroup-user'
       },
     });
   }

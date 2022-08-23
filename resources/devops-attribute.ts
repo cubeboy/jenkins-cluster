@@ -1,4 +1,10 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as eks from 'aws-cdk-lib/aws-eks'
+
+export const StackInfo = {
+  name: 'CdkDevOps',
+  cost: 'com-code'
+}
 
 export const VpcAttributes = {
   vpcName: 'devops-vpc',
@@ -20,7 +26,7 @@ export const VpcAttributes = {
 } as ec2.VpcProps
 
 export const drivers = {
-  awsEfsDriver: true
+  awsEfsDriver: true,
 }
 
 export const efsAttributes = {
@@ -30,4 +36,14 @@ export const efsAttributes = {
   grafana: {
     storage: '2Gi'
   },
+}
+
+export const EksAttributes = {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+  nodeMinSize: 1,
+  nodeMaxSize: 2,
+  nodeDesiredSize: 1,
+  nodeDiskSize: 20,
+  nodeAmiType: eks.NodegroupAmiType.AL2_X86_64,
+  nodeSubnetType: ec2.SubnetType.PRIVATE_WITH_NAT
 }
